@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: unimannheim-bib-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bib
+      MYSQL_USER: bibuser
+      MYSQL_PASSWORD: bibpass
+      TZ: Europe/Berlin
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./resources/sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_VERSION: "20"
+    container_name: unimannheim-bib-bot
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      TZ: Europe/Berlin
+      USE_DB: "true"      # <- DB enabled
+      DB_HOST: db         # <- internal service name
+      DB_USER: bibuser
+      DB_PASSWORD: bibpass
+      DB_DATABASE: bib
+    restart: unless-stopped
+
+volumes:
+  db_data:

@@ -18,14 +18,18 @@
 - [📸 Preview](#-preview)
 - [✨ Features](#-features)
 - [🚀 Getting Started](#-getting-started)
-  - [1. Clone the repository](#1-clone-the-repository)
-  - [2. Install dependencies](#2-install-dependencies)
-  - [3. Create a Discord Bot](#3-create-a-discord-bot)
-  - [4. Configure environment](#4-configure-environment)
+    - [1. Clone the repository](#1-clone-the-repository)
+    - [2. Install dependencies](#2-install-dependencies)
+    - [3. Create a Discord Bot](#3-create-a-discord-bot)
+    - [4. Configure environment](#4-configure-environment)
 - [▶️ Running the Bot](#️-running-the-bot)
+- [🐳 Running with Docker](#-running-with-docker)
+    - [Option A — Bot only (no database)](#option-a--bot-only-no-database)
+    - [Option B — Bot + bundled MySQL (self-hosted)](#option-b--bot--bundled-mysql-self-hosted)
+    - [Automatic updates from GitHub (Watchtower)](#automatic-updates-from-github-watchtower)
 - [🛠️ Configuration](#️-configuration)
-  - [Environment Variables](#environment-variables-env)
-  - [Database](#database)
+    - [Environment Variables](#environment-variables-env)
+    - [Database Schema](#database-schema)
 - [💡 Ideas for Extensions](#-ideas-for-extensions)
 - [⚖️ Legal & Ethical Notes](#️-legal--ethical-notes)
 - [📜 License](#-license)
@@ -70,15 +74,15 @@ npm install
 3. Navigate to **Bot** → click **Add Bot**.
 4. Copy the **Bot Token** (use this in your `.env` file as `DISCORD_TOKEN`).
 5. Under **Privileged Gateway Intents**, enable:
-   - ✅ Message Content Intent  
-   - ✅ Server Members Intent  
+    - ✅ Message Content Intent
+    - ✅ Server Members Intent
 6. Under **OAuth2 → URL Generator**:
-   - Select **bot** and **applications.commands**.  
-   - Under Bot Permissions, choose:  
-     - Send Messages  
-     - Embed Links  
-     - Read Message History  
-   - Copy the generated URL and add the bot to your server.
+    - Select **bot** and **applications.commands**.
+    - Under Bot Permissions, choose:
+        - Send Messages
+        - Embed Links
+        - Read Message History
+    - Copy the generated URL and add the bot to your server.
 
 ### 4. Configure environment
 Copy the provided `.env.example` and fill in your own values:
@@ -89,7 +93,7 @@ cp .env.example .env
 
 Edit `.env` and add:
 - 🎫 Your **Discord Bot Token**
-- 🗄️ Your **MySQL database credentials**
+- 🗄️ Your **MySQL database credentials** (only if you enable DB persistence)
 - 💬 The **Discord Channel ID** + message IDs for each embed
 
 ---
@@ -110,7 +114,34 @@ The bot will:
 1. Login to Discord
 2. Fetch the latest occupancy data
 3. Update the pinned messages in your chosen channel
-4. Save a snapshot every 4 update cycles to your database
+4. Save a snapshot every 4 update cycles to your database (if DB is enabled)
+
+---
+
+## 🐳 Running with Docker
+
+This project provides two Compose setups depending on whether you want persistence:
+
+### Option A — Bot only (no database)
+Use this if you **don’t** want to store data (Discord updates only).  
+Compose file: `docker-compose.bot.yml`
+
+```bash
+docker compose -f docker-compose.bot.yml up -d --build
+```
+This sets `USE_DB=false` explicitly so the bot skips all DB writes.
+
+### Option B — Bot + bundled MySQL (self-hosted)
+Use this to run the bot **with its own MySQL** database.  
+Compose file: `docker-compose.dev.yml`
+
+```bash
+docker compose -f docker-compose.dev.yml up -d --build
+```
+- MySQL is started alongside the bot.
+- The schema is auto-created from `resources/sql/init.sql`.
+- Data persists in the `db_data` volume.
+- The bot connects internally to the `db` service with `USE_DB=true`.
 
 ---
 
@@ -118,6 +149,7 @@ The bot will:
 
 ### Environment Variables (`.env`)
 ```
+# Discord
 DISCORD_TOKEN=your-bot-token-here
 TEXT_CHANNEL_ID=123456789012345678
 MESSAGE_A3=123456789012345678
@@ -125,16 +157,19 @@ MESSAGE_A5=123456789012345678
 MESSAGE_EHRENHOF=123456789012345678
 MESSAGE_SCHNECKENHOF=123456789012345678
 
+# Database
+USE_DB=true                 # set false to disable DB writes entirely
 DB_HOST=localhost
 DB_USER=your-db-user
 DB_PASSWORD=your-db-password
 DB_DATABASE=your-db-name
 
+# Scraper
 OCCUPANCY_URL=https://www.bib.uni-mannheim.de/standorte/freie-sitzplaetze/
 DEBUG=false
 ```
 
-### Database
+### Database Schema
 The bot writes snapshots into a table `belegung`:
 
 ```sql

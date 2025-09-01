@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS belegung (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bib VARCHAR(50) NOT NULL,
+    percentage INT NOT NULL,
+    occupied INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
