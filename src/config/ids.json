@@ -1,0 +1,15 @@
+{
+  "messageIDs": {
+    "A3": "env:MESSAGE_A3",
+    "A5": "env:MESSAGE_A5",
+    "Ehrenhof": "env:MESSAGE_EHRENHOF",
+    "Schneckenhof": "env:MESSAGE_SCHNECKENHOF"
+  },
+  "libraryUrls": {
+    "A3": "https://www.bib.uni-mannheim.de/standorte/bb-a3/",
+    "A5": "https://www.bib.uni-mannheim.de/standorte/bb-a5/",
+    "Ehrenhof": "https://www.bib.uni-mannheim.de/standorte/bb-schloss-ehrenhof/",
+    "Schneckenhof": "https://www.bib.uni-mannheim.de/standorte/bb-schloss-schneckenhof/"
+  },
+  "occupancyUrl": "https://www.bib.uni-mannheim.de/standorte/freie-sitzplaetze/"
+}
