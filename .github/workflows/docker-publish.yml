@@ -78,6 +78,9 @@ jobs:
 
             type=sha,prefix=sha-,format=short
 
+      - name: Show generated tags
+        run: echo "${{ steps.meta.outputs.tags }}"
+
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
@@ -87,7 +90,10 @@ jobs:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
