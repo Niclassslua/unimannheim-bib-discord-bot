@@ -21,11 +21,8 @@ services:
     restart: unless-stopped
 
   bot:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        NODE_VERSION: "20"
+    image: ghcr.io/niclassslua/unimannheim-bib-discord-bot:main
+    pull_policy: always
     container_name: unimannheim-bib-bot
     depends_on:
       db:
@@ -35,12 +32,12 @@ services:
     environment:
       NODE_ENV: production
       TZ: Europe/Berlin
-      USE_DB: "true"      # <- DB enabled
-      DB_HOST: db         # <- internal service name
+      USE_DB: "true"
+      DB_HOST: db
       DB_USER: bibuser
       DB_PASSWORD: bibpass
       DB_DATABASE: bib
     restart: unless-stopped
-
+    
 volumes:
   db_data:
