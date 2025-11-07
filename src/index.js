@@ -27,12 +27,12 @@ const DEBUG = process.env.DEBUG === 'true';
  * Channel and message IDs can be set via environment variables for flexibility across servers.
  * Defaults are provided for quick local testing but you should prefer env-based configuration.
  */
-const textChannelID = process.env.TEXT_CHANNEL_ID || '1202063251379068938';
+const textChannelID = process.env.TEXT_CHANNEL_ID;
 const messageIDs = {
-    A3: process.env.MESSAGE_A3 || '1202069658975600743',
-    A5: process.env.MESSAGE_A5 || '1202070259079843881',
-    Ehrenhof: process.env.MESSAGE_EHRENHOF || '1202070276180029501',
-    Schneckenhof: process.env.MESSAGE_SCHNECKENHOF || '1202070296543100958'
+    A3: process.env.MESSAGE_A3,
+    A5: process.env.MESSAGE_A5,
+    Ehrenhof: process.env.MESSAGE_EHRENHOF,
+    Schneckenhof: process.env.MESSAGE_SCHNECKENHOF
 };
 
 // Shared occupancy overview page
